@@ -10,15 +10,16 @@ rbac:
   create: true
 
 adminUser:
-  # Create the local admin user and its cluster role so the dashboard has
-  # read access. createSecret is left false so the base renders without a
-  # mandatory bcrypt passwordHash; a cluster that wants local password login
-  # supplies adminUser.passwordHash (and flips createSecret true) via the
-  # weave-gitops-values-override secret, otherwise access is via OIDC.
+  # Create the local admin user, its cluster role, and the cluster-user-auth
+  # secret the gitops-server requires to start. The passwordHash below is a
+  # placeholder bcrypt hash (password: "flux") and MUST be overridden per
+  # cluster via the weave-gitops-values-override secret with a real hash
+  # (generate with: gitops get bcrypt-hash), or replaced by OIDC config.
   create: true
   createClusterRole: true
-  createSecret: false
+  createSecret: true
   username: admin
+  passwordHash: "$2a$10$P/tHQ1DNFXdvX0zRGA8LPeSOyb0JXq9rP3fZ4W8HGTpLV7qHDlWhe"
 
 service:
   create: true
