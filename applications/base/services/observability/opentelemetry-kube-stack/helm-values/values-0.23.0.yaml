@@ -477,6 +477,19 @@ collectors:
     suffix: daemon
     mode: daemonset
     enabled: true
+    # defaultCRConfig.enabled is false, so collectors are NOT merged with the
+    # shared defaultCRConfig via mergeCollector. The chart templates dereference
+    # $collector.image.* (collector.yaml) and $collector.clusterRoleBinding.enabled
+    # (clusterrole.yaml) directly, so each explicitly-defined collector must
+    # carry these structural blocks or Helm fails with a nil-pointer error.
+    image:
+      repository: otel/opentelemetry-collector-k8s
+      pullPolicy: IfNotPresent
+      tag: ""
+      digest: ""
+    clusterRoleBinding:
+      enabled: true
+      clusterRoleName: ""
     resources:
       limits:
         cpu: 200m
