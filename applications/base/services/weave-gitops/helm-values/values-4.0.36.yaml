@@ -1,0 +1,40 @@
+# Base values for the Weave GitOps dashboard (Flux UI).
+# Cluster-specific overrides (e.g. adminUser.passwordHash) are supplied via the
+# weave-gitops-values-override Secret rendered by "opencenter cluster generate".
+replicaCount: 1
+
+serviceAccount:
+  create: true
+
+rbac:
+  create: true
+
+adminUser:
+  # Create the local admin user and its cluster role so the dashboard has
+  # read access. createSecret is left false so the base renders without a
+  # mandatory bcrypt passwordHash; a cluster that wants local password login
+  # supplies adminUser.passwordHash (and flips createSecret true) via the
+  # weave-gitops-values-override secret, otherwise access is via OIDC.
+  create: true
+  createClusterRole: true
+  createSecret: false
+  username: admin
+
+service:
+  create: true
+  type: ClusterIP
+  port: 9001
+
+networkPolicy:
+  create: true
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+  runAsUser: 1000
+  readOnlyRootFilesystem: true
