@@ -9,6 +9,21 @@ cloud_provider: external
 # Select a CCM managed by Kubespray. Leave this empty when GitOps owns the CCM.
 external_cloud_provider: ${external_cloud_provider}
 %{ endif ~}
+# CoreDNS and its autoscaler must be schedulable before an external CCM clears
+# the uninitialized taint; otherwise Flux cannot resolve or reach GitHub during
+# bootstrap. These tolerations are harmless after node initialization.
+dns_extra_tolerations:
+  - key: node.cloudprovider.kubernetes.io/uninitialized
+    operator: Exists
+    effect: NoSchedule
+dns_autoscaler_extra_tolerations:
+  - key: node.cloudprovider.kubernetes.io/uninitialized
+    operator: Exists
+    effect: NoSchedule
+metrics_server_extra_tolerations:
+  - key: node.cloudprovider.kubernetes.io/uninitialized
+    operator: Exists
+    effect: NoSchedule
 %{ if sysctl_file_path != "" ~}
 sysctl_file_path: "${sysctl_file_path}"
 %{ endif ~}
